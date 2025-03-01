@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Quiz à Choix Multiple</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variables */
+        :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            --secondary-color: #E5E7EB;
+            --secondary-hover: #D1D5DB;
+            --danger-color: #EF4444;
+            --danger-hover: #DC2626;
+            --text-color: #1F2937;
+            --text-light: #6B7280;
+            --background-color: #F9FAFB;
+            --container-bg: #FFFFFF;
+            --border-color: #E5E7EB;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --border-radius: 0.5rem;
+            --transition: all 0.3s ease;
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: var(--transition);
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: var(--secondary-hover);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background-color: var(--danger-hover);
+        }
+
+        /* Admin Container */
+        .quiz-container {
+            background-color: var(--container-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.3s ease-in-out;
+            width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typography */
+        .title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 1.5rem 0;
+            color: var(--text-color);
+        }
+
+        .description {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            min-height: 1.25rem;
+        }
+
+        /* Login Screen */
+        #login-screen {
+            text-align: center;
+        }
+
+        #login-screen .btn {
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .admin-link {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .admin-link a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+
+        .admin-link a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        /* Admin Screen */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .results-container {
+            margin-top: 1.5rem;
+        }
+
+        .no-results {
+            text-align: center;
+            color: var(--text-light);
+            padding: 2rem;
+            background-color: var(--secondary-color);
+            border-radius: var(--border-radius);
+        }
+
+        .results-table-container {
+            overflow-x: auto;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        .results-table th {
+            background-color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .results-table tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .results-table tr:hover {
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        .answer-detail {
+            margin-bottom: 0.25rem;
+        }
+
+        .correct {
+            color: #059669;
+        }
+
+        .incorrect {
+            color: var(--danger-color);
+        }
+
+        /* Nouvelles classes pour les fonctionnalités ajoutées */
+        .settings-section {
+            background-color: rgba(79, 70, 229, 0.05);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-with-button {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .input-with-button input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+
+        .input-with-button input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        .message {
+            color: var(--primary-color);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            min-height: 1.25rem;
+        }
+
+        .search-filter-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-container {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        .sort-container {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .sort-container .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .quiz-container {
+                padding: 1.5rem;
+            }
+            
+            .admin-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .admin-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="login-screen" class="quiz-container">
+            <h1 class="title">Accès Administration</h1>
+            <p class="description">Veuillez entrer le code d'accès pour voir les résultats.</p>
+            <div class="form-group">
+                <label for="access-code">Code d'accès</label>
+                <input type="password" id="access-code" placeholder="Entrez le code d'accès" required>
+                <p id="error-message" class="error-message"></p>
+            </div>
+            <button id="login-btn" class="btn btn-primary">Se connecter</button>
+            <div class="admin-link">
+                <a href="quiz.html">Retour au quiz</a>
+            </div>
+        </div>
+
+        <div id="admin-screen" class="quiz-container hidden">
+            <div class="admin-header">
+                <h1 class="title">Panneau d'administration</h1>
+                <button id="logout-btn" class="btn btn-danger">Se déconnecter</button>
+            </div>
+            
+            <div class="admin-actions">
+                <a href="quiz.html" class="btn btn-secondary">Retour au quiz</a>
+                <a href="admin-questions.html" class="btn btn-secondary">Gérer les questions</a>
+                <button id="refresh-btn" class="btn btn-primary">Actualiser les données</button>
+            </div>
+            
+            <div class="settings-section">
+                <h2 class="subtitle">Paramètres du quiz</h2>
+                <div class="form-group">
+                    <label for="quiz-access-code">Code d'accès au quiz</label>
+                    <div class="input-with-button">
+                        <input type="text" id="quiz-access-code" placeholder="Code d'accès actuel">
+                        <button id="save-access-code-btn" class="btn btn-primary">Sauvegarder</button>
+                    </div>
+                    <p id="access-code-message" class="message"></p>
+                </div>
+            </div>
+            
+            <h2 class="subtitle">Résultats des participants</h2>
+            
+            <div class="search-filter-section">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Rechercher un participant...">
+                </div>
+                <div class="sort-container">
+                    <button id="sort-by-score-btn" class="btn btn-secondary">Trier par score</button>
+                    <button id="sort-by-date-btn" class="btn btn-secondary">Trier par date</button>
+                    <button id="sort-by-name-btn" class="btn btn-secondary">Trier par nom</button>
+                </div>
+            </div>
+            
+            <div id="results-container" class="results-container">
+                <div id="no-results" class="no-results">
+                    Aucun résultat pour le moment
+                </div>
+                <div id="results-table-container" class="results-table-container hidden">
+                    <table id="results-table" class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Score</th>
+                                <th>Date</th>
+                                <th>Réponses</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration du quiz
+        const quizConfig = {
+            title: "Quiz à Choix Multiple",
+            description: "Répondez aux questions suivantes pour tester vos connaissances.",
+            adminCode: "admin123",
+            // URL de l'API Google Apps Script - À METTRE À JOUR après le redéploiement avec la nouvelle URL
+            apiUrl: "METTEZ_VOTRE_NOUVELLE_URL_DE_DEPLOIEMENT_ICI",
+            // ID de la Google Sheet utilisée pour stocker les résultats
+            sheetId: "1BYecR66zCDlHWdjz7sf-TeklPSoSH34VP_w8orZe0vw"
+        };
+
+        // Questions du quiz
+        const quizQuestions = [
+            {
+                id: 1,
+                question: "Quelle est la capitale de la France?",
+                options: ["Lyon", "Paris", "Marseille", "Bordeaux"],
+                correctAnswer: 1
+            },
+            {
+                id: 2,
+                question: "Quel est le plus grand océan du monde?",
+                options: ["Atlantique", "Indien", "Arctique", "Pacifique"],
+                correctAnswer: 3
+            },
+            {
+                id: 3,
+                question: "Qui a peint la Joconde?",
+                options: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Claude Monet"],
+                correctAnswer: 2
+            },
+            {
+                id: 4,
+                question: "En quelle année la première Guerre mondiale a-t-elle commencé?",
+                options: ["1914", "1915", "1918", "1939"],
+                correctAnswer: 0
+            },
+            {
+                id: 5,
+                question: "Quel est l'élément chimique le plus abondant dans l'univers?",
+                options: ["Oxygène", "Carbone", "Hydrogène", "Hélium"],
+                correctAnswer: 2
+            }
+        ];
+
+        // API functions for Google Sheets integration
+        const api = {
+            getResults: async function() {
+                try {
+                    // Create cache-busting URL to avoid cached responses
+                    const url = `${quizConfig.apiUrl}?action=getResults&cachebust=${Date.now()}`;
+                    
+                    // Send GET request to Google Apps Script
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        mode: 'cors',
+                        cache: 'no-cache',
+                        credentials: 'omit',
+                        // Avoid credentials to prevent preflight requests
+                        headers: {} // No custom headers to prevent preflight
+                    });
+                    
+                    // If response is opaque (from no-cors), we cannot read it
+                    if (response.type === 'opaque') {
+                        console.log('Opaque response received from API. Cannot retrieve results.');
+                        return { success: false, error: 'Unable to read response from server' };
+                    }
+                    
+                    // Parse response
+                    const data = await response.json();
+                    
+                    // Check if the request was successful
+                    if (data.status === "success") {
+                        return { success: true, data: data.data };
+                    } else {
+                        return { success: false, error: data.message || 'Unknown error' };
+                    }
+                } catch (error) {
+                    console.error('Error retrieving results from API:', error);
+                    
+                    // If we encounter a CORS error, try a simpler fetch with image method
+                    if (error.toString().includes('CORS') || error.toString().includes('NetworkError')) {
+                        try {
+                            return await this.getResultsSimpleFetch();
+                        } catch (simpleFetchError) {
+                            console.error('Simple fetch also failed:', simpleFetchError);
+                        }
+                    }
+                    
+                    // Fall back to localStorage
+                    const localResults = this.getResultsFromLocalStorage();
+                    if (localResults.length > 0) {
+                        console.log('Retrieved results from localStorage as fallback');
+                        return { success: true, data: localResults, source: 'localStorage' };
+                    }
+                    
+                    return { success: false, error: error.toString() };
+                }
+            },
+            
+            // Try a simpler fetch approach to avoid CORS
+            getResultsSimpleFetch: async function() {
+                return new Promise((resolve, reject) => {
+                    const url = `${quizConfig.apiUrl}?action=getResults&cachebust=${Date.now()}`;
+                    
+                    // Create a script element to bypass CORS
+                    const script = document.createElement('script');
+                    const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+                    
+                    // Cleanup function
+                    const cleanup = () => {
+                        delete window[callbackName];
+                        document.body.removeChild(script);
+                    };
+                    
+                    // Set timeout for the request
+                    const timeout = setTimeout(() => {
+                        cleanup();
+                        reject(new Error('JSONP request timed out'));
+                    }, 10000);
+                    
+                    // Define the callback
+                    window[callbackName] = (data) => {
+                        clearTimeout(timeout);
+                        cleanup();
+                        resolve({ success: true, data: data.data });
+                    };
+                    
+                    // Set up the script tag
+                    script.src = `${url}&callback=${callbackName}`;
+                    script.async = true;
+                    script.onerror = () => {
+                        clearTimeout(timeout);
+                        cleanup();
+                        reject(new Error('JSONP request failed'));
+                    };
+                    
+                    // Add script to the page
+                    document.body.appendChild(script);
+                });
+            },
+            
+            getResultsFromLocalStorage: function() {
+                try {
+                    const storedResults = JSON.parse(localStorage.getItem('quizResults') || '[]');
+                    return storedResults;
+                } catch (error) {
+                    console.error('Error retrieving results from localStorage:', error);
+                    return [];
+                }
+            },
+
+            updateAccessCode: async function(newCode) {
+                try {
+                    // Create cache-busting URL
+                    const url = `${quizConfig.apiUrl}?action=updateAccessCode&cachebust=${Date.now()}`;
+                    
+                    // Create payload
+                    const payload = {
+                        accessCode: newCode
+                    };
+                    
+                    // Send POST request to Google Apps Script
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        mode: 'cors',
+                        cache: 'no-cache',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    // Parse response
+                    const data = await response.json();
+                    return { 
+                        success: data.status === "success",
+                        data: data
+                    };
+                } catch (error) {
+                    console.error('Error updating access code:', error);
+                    
+                    // Try JSONP approach as a fallback
+                    return new Promise((resolve, reject) => {
+                        try {
+                            console.log('Trying JSONP approach for updating access code...');
+                            const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+                            
+                            // Cleanup function
+                            const cleanup = () => {
+                                delete window[callbackName];
+                                document.body.removeChild(script);
+                            };
+                            
+                            // Set timeout for the request
+                            const timeout = setTimeout(() => {
+                                cleanup();
+                                reject(new Error('JSONP request timed out'));
+                            }, 10000);
+                            
+                            // Define the callback
+                            window[callbackName] = (data) => {
+                                clearTimeout(timeout);
+                                cleanup();
+                                resolve({ 
+                                    success: data.status === "success",
+                                    data: data
+                                });
+                            };
+                            
+                            // Set up the script tag with encoded parameters
+                            const jsonpUrl = `${quizConfig.apiUrl}?action=updateAccessCode&accessCode=${encodeURIComponent(newCode)}&callback=${callbackName}&cachebust=${Date.now()}`;
+                            const script = document.createElement('script');
+                            script.src = jsonpUrl;
+                            script.async = true;
+                            script.onerror = () => {
+                                clearTimeout(timeout);
+                                cleanup();
+                                reject(new Error('JSONP request failed'));
+                            };
+                            
+                            // Add script to the page
+                            document.body.appendChild(script);
+                        } catch (jsonpError) {
+                            console.error('JSONP fallback failed:', jsonpError);
+                            reject(jsonpError);
+                        }
+                    });
+                }
+            },
+
+            getAccessCode: async function() {
+                try {
+                    // Create cache-busting URL
+                    const url = `${quizConfig.apiUrl}?action=getAccessCode&cachebust=${Date.now()}`;
+                    
+                    // Send GET request to Google Apps Script
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    
+                    if (data.status === "success") {
+                        return { success: true, accessCode: data.accessCode };
+                    } else {
+                        return { success: false, error: data.message || 'Unknown error' };
+                    }
+                } catch (error) {
+                    console.error('Error getting access code:', error);
+                    
+                    // Try JSONP approach as a fallback
+                    return new Promise((resolve, reject) => {
+                        try {
+                            console.log('Trying JSONP approach for getting access code...');
+                            const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+                            
+                            // Cleanup function
+                            const cleanup = () => {
+                                delete window[callbackName];
+                                document.body.removeChild(script);
+                            };
+                            
+                            // Set timeout for the request
+                            const timeout = setTimeout(() => {
+                                cleanup();
+                                reject(new Error('JSONP request timed out'));
+                            }, 10000);
+                            
+                            // Define the callback
+                            window[callbackName] = (data) => {
+                                clearTimeout(timeout);
+                                cleanup();
+                                if (data.status === "success") {
+                                    resolve({ success: true, accessCode: data.accessCode });
+                                } else {
+                                    resolve({ success: false, error: data.message || 'Unknown error' });
+                                }
+                            };
+                            
+                            // Set up the script tag
+                            const jsonpUrl = `${quizConfig.apiUrl}?action=getAccessCode&callback=${callbackName}&cachebust=${Date.now()}`;
+                            const script = document.createElement('script');
+                            script.src = jsonpUrl;
+                            script.async = true;
+                            script.onerror = () => {
+                                clearTimeout(timeout);
+                                cleanup();
+                                reject(new Error('JSONP request failed'));
+                            };
+                            
+                            // Add script to the page
+                            document.body.appendChild(script);
+                        } catch (jsonpError) {
+                            console.error('JSONP fallback failed:', jsonpError);
+                            
+                            // Fallback to localStorage as last resort
+                            const localCode = localStorage.getItem('quizAccessCode') || quizConfig.quizAccessCode;
+                            resolve({ success: true, accessCode: localCode });
+                        }
+                    });
+                }
+            }
+        };
+
+        // Utilisation du stockage local comme solution de secours quand l'API n'est pas configurée
+        const localStorageService = {
+            getResults: () => {
+                try {
+                    const results = localStorage.getItem('quizResults');
+                    return results ? JSON.parse(results) : [];
+                } catch (error) {
+                    console.error('Erreur lors de la récupération locale:', error);
+                    return [];
+                }
+            }
+        };
+
+        // Fonctions utilitaires
+        const utils = {
+            formatDate: (dateString) => {
+                const date = new Date(dateString);
+                return new Intl.DateTimeFormat('fr-FR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }).format(date);
+            }
+        };
+
+        // Logique de la page admin
+        document.addEventListener('DOMContentLoaded', () => {
+            // Éléments du DOM
+            const loginScreen = document.getElementById('login-screen');
+            const adminScreen = document.getElementById('admin-screen');
+            
+            const accessCodeInput = document.getElementById('access-code');
+            const errorMessage = document.getElementById('error-message');
+            const loginBtn = document.getElementById('login-btn');
+            
+            const logoutBtn = document.getElementById('logout-btn');
+            const refreshBtn = document.getElementById('refresh-btn');
+            
+            const quizAccessCodeInput = document.getElementById('quiz-access-code');
+            const saveAccessCodeBtn = document.getElementById('save-access-code-btn');
+            const accessCodeMessage = document.getElementById('access-code-message');
+            
+            const searchInput = document.getElementById('search-input');
+            const sortByScoreBtn = document.getElementById('sort-by-score-btn');
+            const sortByDateBtn = document.getElementById('sort-by-date-btn');
+            const sortByNameBtn = document.getElementById('sort-by-name-btn');
+            
+            const noResults = document.getElementById('no-results');
+            const resultsTableContainer = document.getElementById('results-table-container');
+            const resultsBody = document.getElementById('results-body');
+            
+            // État de l'application
+            let state = {
+                isAuthenticated: false,
+                results: [],
+                filteredResults: [],
+                sortType: 'date', // 'date', 'score', 'name'
+                sortDirection: 'desc', // 'asc', 'desc'
+                searchQuery: ''
+            };
+            
+            // Initialiser la page admin
+            const initAdmin = () => {
+                // Mettre à jour le titre depuis la configuration
+                document.title = `Administration - ${quizConfig.title}`;
+                
+                // Vérifier si déjà authentifié
+                const isAuth = localStorage.getItem('adminAuthenticated');
+                if (isAuth === 'true') {
+                    state.isAuthenticated = true;
+                    showAdminScreen();
+                    loadResults();
+                }
+                
+                // Charger le code d'accès actuel du quiz
+                loadQuizAccessCode();
+                
+                // Ajouter les écouteurs d'événements
+                loginBtn.addEventListener('click', handleLogin);
+                logoutBtn.addEventListener('click', handleLogout);
+                refreshBtn.addEventListener('click', loadResults);
+                
+                saveAccessCodeBtn.addEventListener('click', handleSaveAccessCode);
+                searchInput.addEventListener('input', handleSearch);
+                
+                sortByScoreBtn.addEventListener('click', () => handleSort('score'));
+                sortByDateBtn.addEventListener('click', () => handleSort('date'));
+                sortByNameBtn.addEventListener('click', () => handleSort('name'));
+                
+                // Support de la touche Entrée pour la connexion
+                accessCodeInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') handleLogin();
+                });
+            };
+            
+            // Chargement du code d'accès quiz
+            const loadQuizAccessCode = async () => {
+                try {
+                    // Tenter de récupérer le code depuis l'API
+                    const response = await api.getAccessCode();
+                    
+                    if (response.success) {
+                        quizAccessCodeInput.value = response.accessCode;
+                        quizConfig.quizAccessCode = response.accessCode;
+                        localStorage.setItem('quizAccessCode', response.accessCode);
+                        console.log('Code d\'accès chargé depuis le serveur');
+                    } else {
+                        // Fallback to localStorage
+                        quizAccessCodeInput.value = localStorage.getItem('quizAccessCode') || quizConfig.quizAccessCode || '';
+                        console.log('Utilisation du code d\'accès local');
+                    }
+                } catch (error) {
+                    console.error("Erreur lors du chargement du code d'accès:", error);
+                    quizAccessCodeInput.value = localStorage.getItem('quizAccessCode') || quizConfig.quizAccessCode || '';
+                }
+            };
+            
+            // Gestionnaires d'événements
+            const handleLogin = () => {
+                const accessCode = accessCodeInput.value.trim();
+                
+                if (accessCode === quizConfig.adminCode) {
+                    state.isAuthenticated = true;
+                    localStorage.setItem('adminAuthenticated', 'true');
+                    errorMessage.textContent = '';
+                    
+                    showAdminScreen();
+                    loadResults();
+                } else {
+                    errorMessage.textContent = "Code d'accès incorrect";
+                    accessCodeInput.value = '';
+                }
+            };
+            
+            const handleLogout = () => {
+                state.isAuthenticated = false;
+                localStorage.removeItem('adminAuthenticated');
+                
+                adminScreen.classList.add('hidden');
+                loginScreen.classList.remove('hidden');
+                
+                // Vider le champ de code d'accès
+                accessCodeInput.value = '';
+            };
+            
+            const handleSaveAccessCode = async () => {
+                const newAccessCode = quizAccessCodeInput.value.trim();
+                
+                if (newAccessCode) {
+                    // Sauvegarder dans localStorage et mettre à jour la configuration
+                    localStorage.setItem('quizAccessCode', newAccessCode);
+                    quizConfig.quizAccessCode = newAccessCode;
+                    
+                    // Envoyer la mise à jour à Google Sheets
+                    try {
+                        const response = await api.updateAccessCode(newAccessCode);
+                        if (response.success) {
+                            accessCodeMessage.textContent = "Code d'accès au quiz sauvegardé avec succès sur le serveur";
+                        } else {
+                            accessCodeMessage.textContent = "Code sauvegardé localement, mais pas sur le serveur: " + (response.error || "erreur inconnue");
+                        }
+                    } catch (error) {
+                        console.error("Erreur lors de la mise à jour du code d'accès:", error);
+                        accessCodeMessage.textContent = "Code sauvegardé localement, mais pas sur le serveur";
+                    }
+                    
+                    // Effacer le message après 3 secondes
+                    setTimeout(() => {
+                        accessCodeMessage.textContent = '';
+                    }, 3000);
+                } else {
+                    accessCodeMessage.textContent = "Veuillez entrer un code d'accès valide";
+                }
+            };
+            
+            const handleSearch = () => {
+                state.searchQuery = searchInput.value.trim().toLowerCase();
+                filterAndSortResults();
+                renderResults();
+            };
+            
+            const handleSort = (sortType) => {
+                // Si on clique sur le même type de tri, on inverse la direction
+                if (state.sortType === sortType) {
+                    state.sortDirection = state.sortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    state.sortType = sortType;
+                    // Par défaut: score et date desc, nom asc
+                    state.sortDirection = (sortType === 'name') ? 'asc' : 'desc';
+                }
+                
+                // Mettre à jour l'UI pour les boutons de tri
+                updateSortButtons();
+                
+                // Trier et afficher les résultats
+                filterAndSortResults();
+                renderResults();
+            };
+            
+            // Fonctions
+            const showAdminScreen = () => {
+                loginScreen.classList.add('hidden');
+                adminScreen.classList.remove('hidden');
+            };
+            
+            const loadResults = async () => {
+                // Essayer de récupérer les résultats via l'API
+                let response;
+                try {
+                    response = await api.getResults();
+                    if (response.success) {
+                        state.results = response.data;
+                    }
+                } catch (error) {
+                    console.error("Erreur lors de la récupération des résultats:", error);
+                }
+                
+                // Si l'API échoue, utiliser le stockage local
+                if (!response || !response.success) {
+                    state.results = localStorageService.getResults();
+                }
+                
+                // Filtrer et trier les résultats
+                filterAndSortResults();
+                
+                // Mettre à jour l'interface
+                updateSortButtons();
+                renderResults();
+            };
+            
+            const filterAndSortResults = () => {
+                // Filtrer les résultats selon la recherche
+                if (state.searchQuery) {
+                    state.filteredResults = state.results.filter(result => 
+                        result.name.toLowerCase().includes(state.searchQuery)
+                    );
+                } else {
+                    state.filteredResults = [...state.results];
+                }
+                
+                // Trier les résultats
+                state.filteredResults.sort((a, b) => {
+                    let comparison = 0;
+                    
+                    switch (state.sortType) {
+                        case 'score':
+                            comparison = a.score - b.score;
+                            break;
+                        case 'date':
+                            // Convertir les dates en timestamps pour comparaison
+                            const dateA = new Date(a.timestamp || a.date);
+                            const dateB = new Date(b.timestamp || b.date);
+                            comparison = dateA.getTime() - dateB.getTime();
+                            break;
+                        case 'name':
+                            comparison = a.name.localeCompare(b.name, 'fr');
+                            break;
+                    }
+                    
+                    // Inverser si ordre descendant
+                    return state.sortDirection === 'desc' ? -comparison : comparison;
+                });
+            };
+            
+            const updateSortButtons = () => {
+                // Retirer la classe active de tous les boutons
+                [sortByScoreBtn, sortByDateBtn, sortByNameBtn].forEach(btn => 
+                    btn.classList.remove('active')
+                );
+                
+                // Ajouter la classe active au bouton sélectionné
+                switch (state.sortType) {
+                    case 'score':
+                        sortByScoreBtn.classList.add('active');
+                        break;
+                    case 'date':
+                        sortByDateBtn.classList.add('active');
+                        break;
+                    case 'name':
+                        sortByNameBtn.classList.add('active');
+                        break;
+                }
+            };
+            
+            const renderResults = () => {
+                if (state.filteredResults.length === 0) {
+                    noResults.classList.remove('hidden');
+                    resultsTableContainer.classList.add('hidden');
+                    return;
+                }
+                
+                noResults.classList.add('hidden');
+                resultsTableContainer.classList.remove('hidden');
+                
+                // Vider et remplir le tableau
+                resultsBody.innerHTML = '';
+                
+                state.filteredResults.forEach(result => {
+                    const row = document.createElement('tr');
+                    
+                    // Cellule du nom
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = result.name;
+                    row.appendChild(nameCell);
+                    
+                    // Cellule du score
+                    const scoreCell = document.createElement('td');
+                    scoreCell.textContent = `${result.score} / ${result.totalQuestions || quizQuestions.length}`;
+                    row.appendChild(scoreCell);
+                    
+                    // Cellule de la date
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = utils.formatDate(result.timestamp || result.date);
+                    row.appendChild(dateCell);
+                    
+                    // Cellule des réponses
+                    const answersCell = document.createElement('td');
+                    const answersContainer = document.createElement('div');
+                    answersContainer.classList.add('answers-container');
+                    
+                    // Le code pour analyser les réponses reste inchangé
+                    if (result.answers) {
+                        let answers = result.answers;
+                        if (typeof answers === 'string') {
+                            try {
+                                answers = JSON.parse(answers);
+                            } catch (e) {
+                                console.error('Erreur lors du parsing des réponses', e);
+                            }
+                        }
+                        
+                        // Si answers est un objet, convertir en tableau
+                        if (!Array.isArray(answers) && typeof answers === 'object') {
+                            const answersArray = [];
+                            for (let i = 0; i < quizQuestions.length; i++) {
+                                answersArray[i] = answers[i] !== undefined ? answers[i] : -1;
+                            }
+                            answers = answersArray;
+                        }
+                        
+                        // Afficher chaque réponse
+                        answers.forEach((answer, index) => {
+                            if (index < quizQuestions.length) {
+                                const question = quizQuestions[index];
+                                const answerDetail = document.createElement('div');
+                                answerDetail.classList.add('answer-detail');
+                                
+                                const answerText = answer !== -1 && answer !== undefined
+                                    ? question.options[answer]
+                                    : "Non répondu";
+                                
+                                const isCorrect = answer === question.correctAnswer;
+                                
+                                answerDetail.innerHTML = `
+                                    <span class="question-label">Q${index + 1}:</span> 
+                                    <span class="${isCorrect ? 'correct' : 'incorrect'}">${answerText} 
+                                    ${isCorrect ? '✓' : '✗'}</span>
+                                `;
+                                
+                                answersContainer.appendChild(answerDetail);
+                            }
+                        });
+                    }
+                    
+                    answersCell.appendChild(answersContainer);
+                    row.appendChild(answersCell);
+                    
+                    resultsBody.appendChild(row);
+                });
+            };
+            
+            // Initialiser l'application
+            initAdmin();
+        });
+    </script>
+</body>
+</html> 

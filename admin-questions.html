@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration des Questions - Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variables */
+        :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            --secondary-color: #E5E7EB;
+            --secondary-hover: #D1D5DB;
+            --danger-color: #EF4444;
+            --danger-hover: #DC2626;
+            --success-color: #10B981;
+            --success-hover: #059669;
+            --text-color: #1F2937;
+            --text-light: #6B7280;
+            --background-color: #F9FAFB;
+            --container-bg: #FFFFFF;
+            --border-color: #E5E7EB;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --border-radius: 0.5rem;
+            --transition: all 0.3s ease;
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--container-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: var(--transition);
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: var(--secondary-hover);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background-color: var(--danger-hover);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background-color: var(--success-hover);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .success-message {
+            color: var(--success-color);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Question List */
+        .question-list {
+            margin-top: 1.5rem;
+        }
+
+        .question-item {
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+
+        .question-item:hover {
+            box-shadow: var(--shadow);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .question-title {
+            font-weight: 600;
+            flex-grow: 1;
+            margin-right: 1rem;
+        }
+
+        .question-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .option-list {
+            margin-top: 0.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .option-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .option-item.correct {
+            color: var(--success-color);
+            font-weight: 500;
+        }
+
+        /* Option inputs in form */
+        .option-inputs {
+            margin-top: 1rem;
+        }
+
+        .option-input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+
+        .option-radio {
+            margin-right: 0.5rem;
+        }
+
+        .option-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .add-option-btn {
+            margin-top: 0.5rem;
+        }
+
+        /* Navigation */
+        .navigation {
+            margin: 2rem 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Loader */
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .loader {
+            border: 4px solid var(--secondary-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            color: var(--primary-color);
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background-color: var(--container-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--danger-color);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header, .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .question-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .modal {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Administration des Questions</h1>
+            <div>
+                <a href="admin2.html" class="btn btn-secondary">Retour à l'Administration</a>
+                <button id="add-question-btn" class="btn btn-primary">Ajouter une Question</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Liste des Questions</h2>
+                <button id="refresh-btn" class="btn btn-secondary">Rafraîchir</button>
+            </div>
+            
+            <div id="message-container"></div>
+            
+            <div id="loader-container" class="loader-container">
+                <div class="loader"></div>
+            </div>
+            
+            <div id="questions-container" class="question-list"></div>
+        </div>
+    </div>
+
+    <!-- Modal pour ajouter/modifier une question -->
+    <div id="question-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title" class="modal-title">Ajouter une Question</h3>
+                <button id="modal-close" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="question-form">
+                    <input type="hidden" id="question-id" value="">
+                    
+                    <div class="form-group">
+                        <label for="question-text">Question</label>
+                        <textarea id="question-text" rows="3" required placeholder="Entrez votre question"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Options</label>
+                        <div id="options-container" class="option-inputs"></div>
+                        <button type="button" id="add-option-btn" class="btn btn-secondary btn-sm add-option-btn">+ Ajouter une option</button>
+                    </div>
+                    
+                    <div id="error-message" class="error-message"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancel-btn" class="btn btn-secondary">Annuler</button>
+                <button type="button" id="save-btn" class="btn btn-primary">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation pour la suppression -->
+    <div id="delete-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirmer la suppression</h3>
+                <button id="delete-modal-close" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer cette question ? Cette action est irréversible.</p>
+                <input type="hidden" id="delete-question-id" value="">
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="delete-cancel-btn" class="btn btn-secondary">Annuler</button>
+                <button type="button" id="confirm-delete-btn" class="btn btn-danger">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const config = {
+            // URL de l'API Google Apps Script - À METTRE À JOUR après le redéploiement
+            apiUrl: "METTEZ_VOTRE_NOUVELLE_URL_DE_DEPLOIEMENT_ICI",
+            adminCode: "admin123" // Code d'administration par défaut
+        };
+
+        // Éléments du DOM
+        const questionsContainer = document.getElementById('questions-container');
+        const loaderContainer = document.getElementById('loader-container');
+        const messageContainer = document.getElementById('message-container');
+        const addQuestionBtn = document.getElementById('add-question-btn');
+        const refreshBtn = document.getElementById('refresh-btn');
+
+        // Éléments du modal
+        const questionModal = document.getElementById('question-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalClose = document.getElementById('modal-close');
+        const questionForm = document.getElementById('question-form');
+        const questionIdInput = document.getElementById('question-id');
+        const questionTextInput = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const addOptionBtn = document.getElementById('add-option-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const errorMessage = document.getElementById('error-message');
+
+        // Éléments du modal de suppression
+        const deleteModal = document.getElementById('delete-modal');
+        const deleteModalClose = document.getElementById('delete-modal-close');
+        const deleteQuestionId = document.getElementById('delete-question-id');
+        const deleteCancelBtn = document.getElementById('delete-cancel-btn');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+
+        // Variables d'état
+        let questions = [];
+        let isEditing = false;
+        let isAdmin = false;
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Vérifier si l'utilisateur est admin
+            checkAdminStatus();
+            
+            // Charger les questions
+            await loadQuestions();
+            
+            // Ajouter les écouteurs d'événements
+            addEventListeners();
+        });
+
+        // Vérifier si l'utilisateur est admin
+        const checkAdminStatus = () => {
+            // Vérifier si le code administrateur est stocké
+            const storedAdminCode = localStorage.getItem('adminVerified');
+            
+            if (storedAdminCode === 'true') {
+                isAdmin = true;
+            } else {
+                // Demander le code administrateur
+                const adminCode = prompt('Veuillez entrer le code administrateur pour accéder à la gestion des questions:');
+                
+                if (adminCode === config.adminCode) {
+                    isAdmin = true;
+                    localStorage.setItem('adminVerified', 'true');
+                } else {
+                    alert('Code administrateur incorrect. Redirection vers la page d\'accueil.');
+                    window.location.href = 'quizzz.html';
+                }
+            }
+        };
+
+        // Ajouter les écouteurs d'événements
+        const addEventListeners = () => {
+            // Boutons principaux
+            addQuestionBtn.addEventListener('click', openAddQuestionModal);
+            refreshBtn.addEventListener('click', loadQuestions);
+            
+            // Modal de question
+            modalClose.addEventListener('click', closeQuestionModal);
+            cancelBtn.addEventListener('click', closeQuestionModal);
+            saveBtn.addEventListener('click', saveQuestion);
+            addOptionBtn.addEventListener('click', addOption);
+            
+            // Modal de suppression
+            deleteModalClose.addEventListener('click', closeDeleteModal);
+            deleteCancelBtn.addEventListener('click', closeDeleteModal);
+            confirmDeleteBtn.addEventListener('click', deleteQuestion);
+        };
+
+        // Charger les questions depuis l'API
+        const loadQuestions = async () => {
+            showLoader();
+            clearMessages();
+            
+            try {
+                // Construire l'URL de l'API
+                const url = `${config.apiUrl}?action=getQuestions&cachebust=${Date.now()}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    questions = data.questions || [];
+                    renderQuestions();
+                    
+                    if (questions.length === 0) {
+                        showMessage('Aucune question trouvée. Ajoutez-en une nouvelle !', 'info');
+                    }
+                } else {
+                    throw new Error(data.message || 'Erreur lors du chargement des questions');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showMessage('Erreur lors du chargement des questions: ' + error.message, 'error');
+                
+                // Utiliser des questions par défaut en cas d'erreur
+                questions = [
+                    {
+                        id: 1,
+                        question: "Quelle est la capitale de la France?",
+                        options: ["Lyon", "Paris", "Marseille", "Bordeaux"],
+                        correctAnswer: 1
+                    },
+                    {
+                        id: 2,
+                        question: "Quel est le plus grand océan du monde?",
+                        options: ["Atlantique", "Indien", "Arctique", "Pacifique"],
+                        correctAnswer: 3
+                    }
+                ];
+                renderQuestions();
+            } finally {
+                hideLoader();
+            }
+        };
+
+        // Afficher les questions
+        const renderQuestions = () => {
+            questionsContainer.innerHTML = '';
+            
+            questions.forEach(question => {
+                const questionItem = document.createElement('div');
+                questionItem.classList.add('question-item');
+                
+                // Créer l'en-tête de la question
+                const questionHeader = document.createElement('div');
+                questionHeader.classList.add('question-header');
+                
+                const questionTitle = document.createElement('div');
+                questionTitle.classList.add('question-title');
+                questionTitle.textContent = question.question;
+                
+                const questionActions = document.createElement('div');
+                questionActions.classList.add('question-actions');
+                
+                const editBtn = document.createElement('button');
+                editBtn.classList.add('btn', 'btn-secondary', 'btn-sm');
+                editBtn.textContent = 'Modifier';
+                editBtn.addEventListener('click', () => openEditQuestionModal(question));
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.classList.add('btn', 'btn-danger', 'btn-sm');
+                deleteBtn.textContent = 'Supprimer';
+                deleteBtn.addEventListener('click', () => openDeleteModal(question.id));
+                
+                questionActions.appendChild(editBtn);
+                questionActions.appendChild(deleteBtn);
+                
+                questionHeader.appendChild(questionTitle);
+                questionHeader.appendChild(questionActions);
+                
+                // Créer la liste des options
+                const optionList = document.createElement('div');
+                optionList.classList.add('option-list');
+                
+                question.options.forEach((option, index) => {
+                    const optionItem = document.createElement('div');
+                    optionItem.classList.add('option-item');
+                    
+                    if (index === question.correctAnswer) {
+                        optionItem.classList.add('correct');
+                        optionItem.textContent = `${index + 1}. ${option} (Réponse correcte)`;
+                    } else {
+                        optionItem.textContent = `${index + 1}. ${option}`;
+                    }
+                    
+                    optionList.appendChild(optionItem);
+                });
+                
+                // Assembler l'élément de question
+                questionItem.appendChild(questionHeader);
+                questionItem.appendChild(optionList);
+                
+                questionsContainer.appendChild(questionItem);
+            });
+        };
+
+        // Ouvrir le modal d'ajout de question
+        const openAddQuestionModal = () => {
+            isEditing = false;
+            modalTitle.textContent = 'Ajouter une Question';
+            questionIdInput.value = '';
+            questionTextInput.value = '';
+            optionsContainer.innerHTML = '';
+            errorMessage.textContent = '';
+            
+            // Ajouter 4 options par défaut
+            for (let i = 0; i < 4; i++) {
+                addOption();
+            }
+            
+            // Sélectionner la première option comme correcte par défaut
+            const firstRadio = document.querySelector('input[type="radio"]');
+            if (firstRadio) {
+                firstRadio.checked = true;
+            }
+            
+            questionModal.classList.remove('hidden');
+        };
+
+        // Ouvrir le modal d'édition de question
+        const openEditQuestionModal = (question) => {
+            isEditing = true;
+            modalTitle.textContent = 'Modifier la Question';
+            questionIdInput.value = question.id;
+            questionTextInput.value = question.question;
+            optionsContainer.innerHTML = '';
+            errorMessage.textContent = '';
+            
+            // Ajouter les options existantes
+            question.options.forEach((option, index) => {
+                const isCorrect = index === question.correctAnswer;
+                addOption(option, isCorrect);
+            });
+            
+            questionModal.classList.remove('hidden');
+        };
+
+        // Fermer le modal de question
+        const closeQuestionModal = () => {
+            questionModal.classList.add('hidden');
+        };
+
+        // Ajouter une option au formulaire
+        const addOption = (value = '', isCorrect = false) => {
+            const optionGroup = document.createElement('div');
+            optionGroup.classList.add('option-input-group');
+            
+            const radioInput = document.createElement('input');
+            radioInput.type = 'radio';
+            radioInput.name = 'correct-option';
+            radioInput.classList.add('option-radio');
+            radioInput.checked = isCorrect;
+            
+            const optionInput = document.createElement('input');
+            optionInput.type = 'text';
+            optionInput.classList.add('option-input');
+            optionInput.placeholder = 'Entrez une option';
+            optionInput.value = value;
+            optionInput.required = true;
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.classList.add('btn', 'btn-danger', 'btn-sm');
+            removeBtn.textContent = '×';
+            removeBtn.addEventListener('click', () => {
+                optionsContainer.removeChild(optionGroup);
+            });
+            
+            optionGroup.appendChild(radioInput);
+            optionGroup.appendChild(optionInput);
+            optionGroup.appendChild(removeBtn);
+            
+            optionsContainer.appendChild(optionGroup);
+        };
+
+        // Enregistrer une question
+        const saveQuestion = async () => {
+            // Vérifier si le formulaire est valide
+            if (!validateForm()) {
+                return;
+            }
+            
+            showLoader();
+            clearMessages();
+            
+            // Récupérer les valeurs du formulaire
+            const questionId = questionIdInput.value.trim();
+            const questionText = questionTextInput.value.trim();
+            
+            // Récupérer les options
+            const options = [];
+            const optionInputs = document.querySelectorAll('.option-input');
+            const radioInputs = document.querySelectorAll('.option-radio');
+            
+            let correctAnswerIndex = -1;
+            
+            for (let i = 0; i < radioInputs.length; i++) {
+                options.push(optionInputs[i].value.trim());
+                
+                if (radioInputs[i].checked) {
+                    correctAnswerIndex = i;
+                }
+            }
+            
+            // Créer l'objet question
+            const questionData = {
+                question: questionText,
+                options: options,
+                correctAnswer: correctAnswerIndex
+            };
+            
+            try {
+                const action = isEditing ? 'updateQuestion' : 'addQuestion';
+                
+                // Construire l'URL de l'API
+                let url = `${config.apiUrl}?action=${action}`;
+                
+                if (isEditing) {
+                    questionData.id = questionId;
+                    url += `&id=${questionId}`;
+                }
+                
+                // Envoyer les données à l'API
+                const response = await fetch(url, {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(questionData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    // Fermer le modal
+                    closeQuestionModal();
+                    
+                    // Recharger les questions
+                    await loadQuestions();
+                    
+                    showMessage(isEditing ? 'Question mise à jour avec succès!' : 'Question ajoutée avec succès!', 'success');
+                } else {
+                    throw new Error(data.message || 'Erreur lors de l\'enregistrement de la question');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                errorMessage.textContent = 'Erreur lors de l\'enregistrement: ' + error.message;
+                
+                // Option de secours: mettre à jour l'interface localement
+                if (isEditing) {
+                    // Mettre à jour la question existante
+                    const index = questions.findIndex(q => q.id == questionId);
+                    if (index !== -1) {
+                        questions[index] = {
+                            ...questions[index],
+                            question: questionText,
+                            options: options,
+                            correctAnswer: correctAnswerIndex
+                        };
+                    }
+                } else {
+                    // Ajouter une nouvelle question
+                    const newId = Math.max(...questions.map(q => q.id), 0) + 1;
+                    questions.push({
+                        id: newId,
+                        question: questionText,
+                        options: options,
+                        correctAnswer: correctAnswerIndex
+                    });
+                }
+                
+                renderQuestions();
+                closeQuestionModal();
+                showMessage('Sauvegarde locale effectuée (en raison d\'une erreur de connexion)', 'info');
+            } finally {
+                hideLoader();
+            }
+        };
+
+        // Valider le formulaire
+        const validateForm = () => {
+            errorMessage.textContent = '';
+            
+            // Vérifier si la question est remplie
+            if (!questionTextInput.value.trim()) {
+                errorMessage.textContent = 'Veuillez entrer une question.';
+                return false;
+            }
+            
+            // Vérifier qu'il y a au moins 2 options
+            const optionInputs = document.querySelectorAll('.option-input');
+            if (optionInputs.length < 2) {
+                errorMessage.textContent = 'Veuillez ajouter au moins 2 options.';
+                return false;
+            }
+            
+            // Vérifier que toutes les options sont remplies
+            for (let i = 0; i < optionInputs.length; i++) {
+                if (!optionInputs[i].value.trim()) {
+                    errorMessage.textContent = 'Veuillez remplir toutes les options.';
+                    return false;
+                }
+            }
+            
+            // Vérifier qu'une réponse correcte est sélectionnée
+            const radioInputs = document.querySelectorAll('.option-radio');
+            const isAnyChecked = Array.from(radioInputs).some(radio => radio.checked);
+            
+            if (!isAnyChecked) {
+                errorMessage.textContent = 'Veuillez sélectionner une réponse correcte.';
+                return false;
+            }
+            
+            return true;
+        };
+
+        // Ouvrir le modal de suppression
+        const openDeleteModal = (questionId) => {
+            deleteQuestionId.value = questionId;
+            deleteModal.classList.remove('hidden');
+        };
+
+        // Fermer le modal de suppression
+        const closeDeleteModal = () => {
+            deleteModal.classList.add('hidden');
+        };
+
+        // Supprimer une question
+        const deleteQuestion = async () => {
+            const questionId = deleteQuestionId.value;
+            
+            showLoader();
+            clearMessages();
+            
+            try {
+                // Construire l'URL de l'API
+                const url = `${config.apiUrl}?action=deleteQuestion&id=${questionId}&cachebust=${Date.now()}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    // Fermer le modal
+                    closeDeleteModal();
+                    
+                    // Recharger les questions
+                    await loadQuestions();
+                    
+                    showMessage('Question supprimée avec succès!', 'success');
+                } else {
+                    throw new Error(data.message || 'Erreur lors de la suppression de la question');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                
+                // Option de secours: mettre à jour l'interface localement
+                questions = questions.filter(q => q.id != questionId);
+                renderQuestions();
+                closeDeleteModal();
+                
+                showMessage('Suppression locale effectuée (en raison d\'une erreur de connexion)', 'info');
+            } finally {
+                hideLoader();
+            }
+        };
+
+        // Afficher le loader
+        const showLoader = () => {
+            loaderContainer.classList.remove('hidden');
+        };
+
+        // Cacher le loader
+        const hideLoader = () => {
+            loaderContainer.classList.add('hidden');
+        };
+
+        // Afficher un message
+        const showMessage = (text, type = 'info') => {
+            messageContainer.innerHTML = '';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = text;
+            
+            if (type === 'error') {
+                messageDiv.classList.add('error-message');
+            } else if (type === 'success') {
+                messageDiv.classList.add('success-message');
+            } else {
+                messageDiv.classList.add('info-message');
+            }
+            
+            messageContainer.appendChild(messageDiv);
+            
+            // Faire défiler vers le message
+            messageContainer.scrollIntoView({ behavior: 'smooth' });
+        };
+
+        // Effacer les messages
+        const clearMessages = () => {
+            messageContainer.innerHTML = '';
+        };
+    </script>
+</body>
+</html> 

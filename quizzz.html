@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz à Choix Multiple</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variables */
+        :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            --secondary-color: #E5E7EB;
+            --secondary-hover: #D1D5DB;
+            --danger-color: #EF4444;
+            --danger-hover: #DC2626;
+            --text-color: #1F2937;
+            --text-light: #6B7280;
+            --background-color: #F9FAFB;
+            --container-bg: #FFFFFF;
+            --border-color: #E5E7EB;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --border-radius: 0.5rem;
+            --transition: all 0.3s ease;
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: var(--transition);
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: var(--secondary-hover);
+        }
+
+        /* Quiz Container */
+        .quiz-container {
+            background-color: var(--container-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.3s ease-in-out;
+            width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typography */
+        .title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        .description {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            min-height: 1.25rem;
+        }
+
+        /* Welcome Screen */
+        #welcome-screen {
+            text-align: center;
+        }
+
+        #welcome-screen .btn {
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .admin-link {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .admin-link a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+
+        .admin-link a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        /* Quiz Screen */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .participant-info {
+            font-weight: 500;
+        }
+
+        .quiz-progress {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .progress-bar {
+            height: 0.5rem;
+            background-color: var(--secondary-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        /* Timer style */
+        .timer-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .timer {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-color);
+            background-color: rgba(79, 70, 229, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .timer.warning {
+            color: #F59E0B;
+        }
+
+        .timer.danger {
+            color: var(--danger-color);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        #question-container {
+            margin-bottom: 2rem;
+        }
+
+        #question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .option {
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .option:hover {
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        .option.selected {
+            background-color: rgba(79, 70, 229, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Summary Screen */
+        .answers-summary {
+            margin: 2rem 0;
+        }
+
+        .answer-item {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .answer-item:last-child {
+            border-bottom: none;
+        }
+
+        .question-text {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .answer-text {
+            color: var(--primary-color);
+        }
+
+        /* Result Screen */
+        .result-content {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .score {
+            font-size: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .score span {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        #restart-btn {
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .quiz-container {
+                padding: 1.5rem;
+            }
+            
+            .navigation-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .navigation-buttons button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="access-code-screen" class="quiz-container">
+            <h1 class="title">Quiz à Choix Multiple</h1>
+            <p class="description">Veuillez entrer le code d'accès pour accéder au quiz.</p>
+            
+            <div class="form-group">
+                <label for="quiz-access-code">Code d'accès</label>
+                <input type="text" id="quiz-access-code" placeholder="Entrez le code d'accès" required>
+                <p id="quiz-access-error" class="error-message"></p>
+            </div>
+            <button id="access-submit-btn" class="btn btn-primary">Accéder au quiz</button>
+        </div>
+
+        <div id="welcome-screen" class="quiz-container hidden">
+            <h1 class="title">Quiz à Choix Multiple</h1>
+            <p class="description">Répondez aux questions suivantes pour tester vos connaissances.</p>
+            <div class="form-group">
+                <label for="participant-name">Votre nom</label>
+                <input type="text" id="participant-name" placeholder="Entrez votre nom" required>
+            </div>
+            <button id="start-btn" class="btn btn-primary">Commencer le quiz</button>
+        </div>
+
+        <div id="quiz-screen" class="quiz-container hidden">
+            <div class="quiz-header">
+                <div class="participant-info">Participant: <span id="participant-name-display"></span></div>
+                <div class="quiz-progress">
+                    Question <span id="current-question">1</span> / <span id="total-questions"></span>
+                </div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+
+            <div class="timer-container">
+                <div id="timer" class="timer">30s</div>
+            </div>
+
+            <div id="question-container">
+                <h2 id="question-text"></h2>
+                <div id="options-container" class="options-container"></div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button id="prev-btn" class="btn btn-secondary">Précédent</button>
+                <button id="next-btn" class="btn btn-primary">Suivant</button>
+            </div>
+        </div>
+
+        <div id="summary-screen" class="quiz-container hidden">
+            <h1 class="title">Résumé de vos réponses</h1>
+            <p class="description">Vérifiez vos réponses avant de soumettre le quiz.</p>
+            
+            <div id="answers-summary" class="answers-summary"></div>
+            
+            <div class="navigation-buttons">
+                <button id="back-to-quiz-btn" class="btn btn-secondary">Revenir au quiz</button>
+                <button id="submit-btn" class="btn btn-primary">Soumettre</button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="quiz-container hidden">
+            <h1 class="title">Résultats du Quiz</h1>
+            <div class="result-content">
+                <p>Merci d'avoir participé, <span id="result-name"></span>!</p>
+                <p class="score">Votre score: <span id="score"></span> / <span id="max-score"></span></p>
+            </div>
+            <button id="restart-btn" class="btn btn-primary">Recommencer le Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        // Configuration du quiz
+        const quizConfig = {
+            title: "Quiz à Choix Multiple",
+            description: "Répondez aux questions suivantes pour tester vos connaissances.",
+            adminCode: "admin123",
+            quizAccessCode: "quiz123", // Code d'accès par défaut pour le quiz
+            // URL de l'API Google Apps Script - À METTRE À JOUR après le redéploiement avec la nouvelle URL
+            apiUrl: "METTEZ_VOTRE_NOUVELLE_URL_DE_DEPLOIEMENT_ICI",
+            // ID de la Google Sheet utilisée pour stocker les résultats
+            sheetId: "1BYecR66zCDlHWdjz7sf-TeklPSoSH34VP_w8orZe0vw",
+            // Durée du timer en secondes pour chaque question
+            questionTimer: 30
+        };
+
+        // Questions du quiz - sera remplacé par les questions chargées depuis le serveur
+        let quizQuestions = [];
+
+        // API functions for Google Sheets integration
+        const api = {
+            submitQuizResult: async function(resultData) {
+                try {
+                    // Try POST method first
+                    return await this.submitWithPost(resultData);
+                } catch (error) {
+                    console.error('Error submitting quiz result via POST:', error);
+                    
+                    // If POST fails, fallback to GET method
+                    try {
+                        console.log('Trying GET method as fallback...');
+                        return await this.submitWithGet(resultData);
+                    } catch (getError) {
+                        console.error('Error submitting quiz result via GET:', getError);
+                        
+                        // Save to localStorage as final fallback
+                        this.saveResultToLocalStorage(resultData);
+                        
+                        return { 
+                            success: false, 
+                            error: getError.toString() 
+                        };
+                    }
+                }
+            },
+            
+            // Method using POST
+            submitWithPost: async function(resultData) {
+                // Create cache-busting URL to avoid cached responses
+                const url = `${quizConfig.apiUrl}?action=submitResult&cachebust=${Date.now()}`;
+                
+                // Create payload
+                const payload = {
+                    name: resultData.name,
+                    score: resultData.score,
+                    totalQuestions: resultData.totalQuestions,
+                    answers: resultData.answers
+                };
+                
+                // Send POST request to Google Apps Script
+                const response = await fetch(url, {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                // If response is opaque (from no-cors), we assume it worked but can't inspect it
+                if (response.type === 'opaque') {
+                    console.log('Opaque response received from API. Cannot determine success status.');
+                    return { success: true };
+                }
+                
+                // Parse response
+                const data = await response.json();
+                return { 
+                    success: data.status === "success",
+                    data: data
+                };
+            },
+            
+            // Method using GET
+            submitWithGet: async function(resultData) {
+                // Serialize answers to a compact string for URL
+                const answersStr = JSON.stringify(resultData.answers);
+                
+                // Build URL with all parameters
+                const url = `${quizConfig.apiUrl}?action=submitResult&name=${encodeURIComponent(resultData.name)}&score=${resultData.score}&totalQuestions=${resultData.totalQuestions}&answers=${encodeURIComponent(answersStr)}&cachebust=${Date.now()}`;
+                
+                // Send GET request to Google Apps Script
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'cors',
+                    cache: 'no-cache'
+                });
+                
+                // If response is opaque (from no-cors), we assume it worked but can't inspect it
+                if (response.type === 'opaque') {
+                    console.log('Opaque response received from API via GET. Cannot determine success status.');
+                    return { success: true };
+                }
+                
+                // Parse response
+                const data = await response.json();
+                return { 
+                    success: data.status === "success",
+                    data: data
+                };
+            },
+            
+            saveResultToLocalStorage: function(resultData) {
+                try {
+                    const timestamp = new Date().toISOString();
+                    const storedResults = JSON.parse(localStorage.getItem('quizResults') || '[]');
+                    
+                    // Add timestamp to the result
+                    resultData.timestamp = timestamp;
+                    
+                    // Add to stored results
+                    storedResults.push(resultData);
+                    
+                    // Save back to localStorage
+                    localStorage.setItem('quizResults', JSON.stringify(storedResults));
+                    
+                    console.log('Saved quiz result to localStorage as fallback');
+                    return true;
+                } catch (error) {
+                    console.error('Error saving to localStorage:', error);
+                    return false;
+                }
+            }
+        };
+
+        // Utilisation du stockage local comme solution de secours quand l'API n'est pas configurée
+        const localStorageService = {
+            saveResult: (result) => {
+                try {
+                    const results = localStorageService.getResults();
+                    results.push(result);
+                    localStorage.setItem('quizResults', JSON.stringify(results));
+                    return { success: true };
+                } catch (error) {
+                    console.error('Erreur lors de la sauvegarde locale:', error);
+                    return { success: false, error: 'Erreur de sauvegarde locale' };
+                }
+            },
+            
+            getResults: () => {
+                try {
+                    const results = localStorage.getItem('quizResults');
+                    return results ? JSON.parse(results) : [];
+                } catch (error) {
+                    console.error('Erreur lors de la récupération locale:', error);
+                    return [];
+                }
+            }
+        };
+
+        // Fonctions utilitaires
+        const utils = {
+            formatDate: (dateString) => {
+                const date = new Date(dateString);
+                return new Intl.DateTimeFormat('fr-FR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }).format(date);
+            },
+            
+            calculateScore: (answers) => {
+                return answers.reduce((score, answer, index) => {
+                    return answer === quizQuestions[index].correctAnswer ? score + 1 : score;
+                }, 0);
+            }
+        };
+
+        // Fonction pour afficher un message temporaire
+        const showTemporaryMessage = (message, duration = 5000) => {
+            const messageElement = document.createElement('div');
+            messageElement.style.position = 'fixed';
+            messageElement.style.top = '10px';
+            messageElement.style.left = '50%';
+            messageElement.style.transform = 'translateX(-50%)';
+            messageElement.style.backgroundColor = '#4F46E5';
+            messageElement.style.color = 'white';
+            messageElement.style.padding = '10px 20px';
+            messageElement.style.borderRadius = '5px';
+            messageElement.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+            messageElement.style.zIndex = '9999';
+            messageElement.textContent = message;
+            
+            document.body.appendChild(messageElement);
+            
+            setTimeout(() => {
+                messageElement.style.opacity = '0';
+                messageElement.style.transition = 'opacity 0.5s ease';
+                
+                setTimeout(() => {
+                    document.body.removeChild(messageElement);
+                }, 500);
+            }, duration);
+        };
+
+        // Fonctions d'aide pour la gestion du code d'accès
+        const normalizeAccessCode = (code) => {
+            // Si c'est un nombre, le convertit en chaîne
+            if (typeof code === 'number') {
+                return String(code);
+            }
+            
+            // Si c'est une chaîne
+            if (typeof code === 'string') {
+                // Supprimer les espaces, les tabulations et les nouvelles lignes
+                return code.trim().replace(/\s+/g, '');
+            }
+            
+            // Pour les autres types, convertir en chaîne
+            return String(code);
+        };
+        
+        const validateAccessCode = (enteredCode, validCodes) => {
+            // Normaliser le code entré
+            const normalizedInput = normalizeAccessCode(enteredCode);
+            
+            // Vérifier parmi tous les codes valides après normalisation
+            for (const code of validCodes) {
+                const normalizedCode = normalizeAccessCode(code);
+                if (normalizedInput === normalizedCode) {
+                    return {
+                        isValid: true,
+                        matchedCode: code
+                    };
+                }
+            }
+            
+            return {
+                isValid: false
+            };
+        };
+
+        // Fonction pour récupérer les questions depuis le serveur
+        const loadQuestions = async () => {
+            try {
+                // Tenter de récupérer les questions depuis l'API
+                if (!quizConfig.apiUrl || quizConfig.apiUrl === "METTEZ_VOTRE_NOUVELLE_URL_DE_DEPLOIEMENT_ICI") {
+                    console.warn('URL de l\'API non configurée. Utilisation des questions par défaut.');
+                    // Définir des questions par défaut comme solution de secours
+                    quizQuestions = [
+                        {
+                            id: 1,
+                            question: "Quelle est la capitale de la France?",
+                            options: ["Lyon", "Paris", "Marseille", "Bordeaux"],
+                            correctAnswer: 1
+                        },
+                        {
+                            id: 2,
+                            question: "Quel est le plus grand océan du monde?",
+                            options: ["Atlantique", "Indien", "Arctique", "Pacifique"],
+                            correctAnswer: 3
+                        },
+                        {
+                            id: 3,
+                            question: "Qui a peint la Joconde?",
+                            options: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Claude Monet"],
+                            correctAnswer: 2
+                        },
+                        {
+                            id: 4,
+                            question: "En quelle année la première Guerre mondiale a-t-elle commencé?",
+                            options: ["1914", "1915", "1918", "1939"],
+                            correctAnswer: 0
+                        },
+                        {
+                            id: 5,
+                            question: "Quel est l'élément chimique le plus abondant dans l'univers?",
+                            options: ["Oxygène", "Carbone", "Hydrogène", "Hélium"],
+                            correctAnswer: 2
+                        }
+                    ];
+                    return;
+                }
+                
+                const url = `${quizConfig.apiUrl}?action=getQuestions&cachebust=${Date.now()}`;
+                console.log('Tentative de récupération des questions depuis l\'API...');
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.status === "success" && data.questions && data.questions.length > 0) {
+                    quizQuestions = data.questions;
+                    console.log(`${quizQuestions.length} questions récupérées avec succès`);
+                } else {
+                    throw new Error("Aucune question trouvée dans la réponse");
+                }
+            } catch (error) {
+                console.error("Erreur lors de la récupération des questions:", error);
+                // Définir des questions par défaut comme solution de secours
+                quizQuestions = [
+                    {
+                        id: 1,
+                        question: "Quelle est la capitale de la France?",
+                        options: ["Lyon", "Paris", "Marseille", "Bordeaux"],
+                        correctAnswer: 1
+                    },
+                    {
+                        id: 2,
+                        question: "Quel est le plus grand océan du monde?",
+                        options: ["Atlantique", "Indien", "Arctique", "Pacifique"],
+                        correctAnswer: 3
+                    },
+                    {
+                        id: 3,
+                        question: "Qui a peint la Joconde?",
+                        options: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Claude Monet"],
+                        correctAnswer: 2
+                    },
+                    {
+                        id: 4,
+                        question: "En quelle année la première Guerre mondiale a-t-elle commencé?",
+                        options: ["1914", "1915", "1918", "1939"],
+                        correctAnswer: 0
+                    },
+                    {
+                        id: 5,
+                        question: "Quel est l'élément chimique le plus abondant dans l'univers?",
+                        options: ["Oxygène", "Carbone", "Hydrogène", "Hélium"],
+                        correctAnswer: 2
+                    }
+                ];
+            }
+        };
+
+        // Logique du quiz
+        document.addEventListener('DOMContentLoaded', () => {
+            // Éléments du DOM
+            const accessCodeScreen = document.getElementById('access-code-screen');
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const quizScreen = document.getElementById('quiz-screen');
+            const summaryScreen = document.getElementById('summary-screen');
+            const resultScreen = document.getElementById('result-screen');
+            
+            const quizAccessCodeInput = document.getElementById('quiz-access-code');
+            const quizAccessError = document.getElementById('quiz-access-error');
+            const accessSubmitBtn = document.getElementById('access-submit-btn');
+            
+            const participantNameInput = document.getElementById('participant-name');
+            const participantNameDisplay = document.getElementById('participant-name-display');
+            const startBtn = document.getElementById('start-btn');
+            
+            const currentQuestionSpan = document.getElementById('current-question');
+            const totalQuestionsSpan = document.getElementById('total-questions');
+            const questionText = document.getElementById('question-text');
+            const optionsContainer = document.getElementById('options-container');
+            const progressFill = document.querySelector('.progress-fill');
+            const timerElement = document.getElementById('timer');
+            
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            const answersSummary = document.getElementById('answers-summary');
+            const backToQuizBtn = document.getElementById('back-to-quiz-btn');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            const resultName = document.getElementById('result-name');
+            const scoreSpan = document.getElementById('score');
+            const maxScoreSpan = document.getElementById('max-score');
+            const restartBtn = document.getElementById('restart-btn');
+            
+            // Variables du timer
+            let timerInterval;
+            let timeLeft;
+            
+            // État de l'application
+            let state = {
+                currentQuestionIndex: 0,
+                answers: [],
+                name: '',
+                score: null,
+                quizAccessVerified: false,
+                validAccessCode: null
+            };
+            
+            // Initialiser le quiz
+            const initQuiz = async () => {
+                // Mettre à jour le titre depuis la configuration
+                document.title = quizConfig.title;
+                document.querySelector('#welcome-screen .title').textContent = quizConfig.title;
+                document.querySelector('#welcome-screen .description').textContent = quizConfig.description;
+                
+                // Récupérer le code d'accès à jour depuis le serveur si possible
+                await loadAccessCode();
+                
+                // Charger les questions depuis le serveur
+                await loadQuestions();
+                
+                // Initialiser le tableau des réponses
+                state.answers = Array(quizQuestions.length).fill(-1);
+                
+                // Vérifier si le code d'accès est déjà validé
+                const accessVerified = localStorage.getItem('quizAccessVerified') === 'true';
+                if (accessVerified) {
+                    state.quizAccessVerified = true;
+                    accessCodeScreen.classList.add('hidden');
+                    welcomeScreen.classList.remove('hidden');
+                }
+                
+                // Ajout total des questions
+                totalQuestionsSpan.textContent = quizQuestions.length;
+                
+                // Ajouter les écouteurs d'événements pour l'accès au quiz
+                accessSubmitBtn.addEventListener('click', handleAccessSubmit);
+                quizAccessCodeInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') handleAccessSubmit();
+                });
+                
+                // Ajouter les écouteurs d'événements pour le quiz
+                participantNameInput.addEventListener('input', handleNameInput);
+                startBtn.addEventListener('click', handleStartQuiz);
+                prevBtn.addEventListener('click', handlePrevQuestion);
+                nextBtn.addEventListener('click', handleNextQuestion);
+                backToQuizBtn.addEventListener('click', handleBackToQuiz);
+                submitBtn.addEventListener('click', handleSubmitQuiz);
+                restartBtn.addEventListener('click', handleRestart);
+                
+                // Désactiver le bouton de démarrage par défaut
+                startBtn.disabled = true;
+            };
+            
+            // Fonction pour récupérer le code d'accès
+            const loadAccessCode = async () => {
+                try {
+                    // Code d'accès par défaut comme fallback
+                    const defaultCode = quizConfig.quizAccessCode;
+                    console.log('Récupération du code d\'accès...');
+                    
+                    // Vérifier si l'URL de l'API est définie
+                    if (!quizConfig.apiUrl || quizConfig.apiUrl === "METTEZ_VOTRE_NOUVELLE_URL_DE_DEPLOIEMENT_ICI") {
+                        console.warn('URL de l\'API non configurée. Utilisation du code par défaut.');
+                        state.validAccessCode = defaultCode;
+                        return;
+                    }
+                    
+                    // Tenter de récupérer le code depuis l'API
+                    const url = `${quizConfig.apiUrl}?action=getAccessCode&cachebust=${Date.now()}`;
+                    console.log('Tentative de récupération du code d\'accès depuis l\'API...');
+                    
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    
+                    if (data.status === "success" && data.accessCode) {
+                        state.validAccessCode = data.accessCode;
+                        localStorage.setItem('quizAccessCode', data.accessCode);
+                        console.log('Code d\'accès récupéré avec succès');
+                    } else {
+                        // Fallback to localStorage
+                        const storedCode = localStorage.getItem('quizAccessCode');
+                        state.validAccessCode = storedCode || defaultCode;
+                        console.log('Utilisation du code d\'accès local');
+                    }
+                } catch (error) {
+                    console.error("Erreur lors de la récupération du code d'accès:", error);
+                    // Fallback to localStorage
+                    const storedCode = localStorage.getItem('quizAccessCode');
+                    state.validAccessCode = storedCode || quizConfig.quizAccessCode;
+                    console.log('Utilisation du code d\'accès par défaut suite à une erreur');
+                }
+            };
+            
+            // Gestionnaires d'événements
+            const handleAccessSubmit = () => {
+                const enteredCode = quizAccessCodeInput.value;
+                
+                // Récupérer le code d'accès depuis l'état ou utiliser la valeur par défaut
+                const currentAccessCode = state.validAccessCode || localStorage.getItem('quizAccessCode') || quizConfig.quizAccessCode;
+                const defaultCode = quizConfig.quizAccessCode;
+                
+                console.log('Vérification du code d\'accès...');
+                
+                // Validation avec la nouvelle fonction
+                const validCodes = [currentAccessCode, defaultCode].filter(Boolean); // Filtrer les valeurs null ou undefined
+                const validationResult = validateAccessCode(enteredCode, validCodes);
+                
+                if (validationResult.isValid) {
+                    console.log("✅ Code d'accès valide");
+                    
+                    // Code d'accès valide
+                    state.quizAccessVerified = true;
+                    localStorage.setItem('quizAccessVerified', 'true');
+                    quizAccessError.textContent = '';
+                    
+                    // Afficher l'écran de bienvenue
+                    accessCodeScreen.classList.add('hidden');
+                    welcomeScreen.classList.remove('hidden');
+                } else {
+                    // Code d'accès invalide
+                    console.log("❌ Code d'accès invalide");
+                    quizAccessError.textContent = "Code d'accès incorrect";
+                    quizAccessCodeInput.value = '';
+                }
+            };
+            
+            const handleNameInput = () => {
+                // Activer le bouton de démarrage si un nom est entré
+                startBtn.disabled = !participantNameInput.value.trim();
+            };
+            
+            const handleStartQuiz = () => {
+                state.name = participantNameInput.value.trim();
+                participantNameDisplay.textContent = state.name;
+                
+                welcomeScreen.classList.add('hidden');
+                quizScreen.classList.remove('hidden');
+                
+                renderQuestion();
+                startTimer();
+            };
+            
+            const handlePrevQuestion = () => {
+                if (state.currentQuestionIndex > 0) {
+                    clearInterval(timerInterval);
+                    state.currentQuestionIndex--;
+                    renderQuestion();
+                    startTimer();
+                }
+            };
+            
+            const handleNextQuestion = () => {
+                const isAnswered = state.answers[state.currentQuestionIndex] !== -1;
+                
+                if (!isAnswered) {
+                    alert('Veuillez sélectionner une réponse avant de continuer.');
+                    return;
+                }
+                
+                clearInterval(timerInterval);
+                
+                if (state.currentQuestionIndex < quizQuestions.length - 1) {
+                    state.currentQuestionIndex++;
+                    renderQuestion();
+                    startTimer();
+                } else {
+                    showSummaryScreen();
+                }
+            };
+            
+            const handleOptionClick = (optionIndex) => {
+                state.answers[state.currentQuestionIndex] = optionIndex;
+                renderQuestion();
+            };
+            
+            const handleSubmitQuiz = async () => {
+                // Calculer le score
+                state.score = utils.calculateScore(state.answers);
+                
+                // Préparer l'objet résultat
+                const result = {
+                    name: state.name,
+                    answers: state.answers,
+                    score: state.score,
+                    totalQuestions: quizQuestions.length,
+                    date: new Date().toISOString()
+                };
+                
+                // Essayer d'envoyer les résultats à Google Sheets
+                let submitResponse;
+                try {
+                    submitResponse = await api.submitQuizResult(result);
+                } catch (error) {
+                    console.error("Erreur lors de la soumission à l'API:", error);
+                    submitResponse = { success: false };
+                }
+                
+                // Si l'API échoue, sauvegarder localement
+                if (!submitResponse || !submitResponse.success) {
+                    localStorageService.saveResult(result);
+                }
+                
+                // Afficher les résultats
+                showResultScreen();
+            };
+            
+            const handleBackToQuiz = () => {
+                summaryScreen.classList.add('hidden');
+                quizScreen.classList.remove('hidden');
+                startTimer();
+            };
+            
+            const handleRestart = () => {
+                // Réinitialiser l'état
+                state = {
+                    currentQuestionIndex: 0,
+                    answers: Array(quizQuestions.length).fill(-1),
+                    name: '',
+                    score: null,
+                    quizAccessVerified: state.quizAccessVerified,
+                    validAccessCode: state.validAccessCode
+                };
+                
+                // Revenir à l'écran d'accueil
+                resultScreen.classList.add('hidden');
+                clearInterval(timerInterval);
+                
+                // Si le code d'accès est toujours valide en localStorage, aller directement à l'écran de bienvenue
+                // sinon, retourner à l'écran de code d'accès
+                if (localStorage.getItem('quizAccessVerified') === 'true') {
+                    welcomeScreen.classList.remove('hidden');
+                } else {
+                    accessCodeScreen.classList.remove('hidden');
+                }
+                
+                // Vider le champ de nom
+                participantNameInput.value = '';
+                startBtn.disabled = true;
+            };
+            
+            // Fonctions pour le timer
+            const startTimer = () => {
+                clearInterval(timerInterval);
+                timeLeft = quizConfig.questionTimer;
+                updateTimerDisplay();
+                
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    updateTimerDisplay();
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        // Si aucune réponse n'a été sélectionnée, passer à -1 (non répondu)
+                        if (state.answers[state.currentQuestionIndex] === -1) {
+                            // Ne rien faire, déjà à -1
+                        }
+                        
+                        // Passer à la question suivante automatiquement
+                        if (state.currentQuestionIndex < quizQuestions.length - 1) {
+                            state.currentQuestionIndex++;
+                            renderQuestion();
+                            startTimer();
+                        } else {
+                            showSummaryScreen();
+                        }
+                    }
+                }, 1000);
+            };
+            
+            const updateTimerDisplay = () => {
+                timerElement.textContent = `${timeLeft}s`;
+                
+                // Ajouter des classes pour les avertissements visuels
+                timerElement.className = "timer"; // Réinitialiser les classes
+                
+                if (timeLeft <= 10 && timeLeft > 5) {
+                    timerElement.classList.add("warning");
+                } else if (timeLeft <= 5) {
+                    timerElement.classList.add("danger");
+                }
+            };
+            
+            // Fonctions de rendu
+            const renderQuestion = () => {
+                const question = quizQuestions[state.currentQuestionIndex];
+                
+                // Mettre à jour le texte de la question
+                questionText.textContent = `${question.question}`;
+                currentQuestionSpan.textContent = state.currentQuestionIndex + 1;
+                
+                // Mettre à jour la barre de progression
+                const progressPercentage = ((state.currentQuestionIndex + 1) / quizQuestions.length) * 100;
+                progressFill.style.width = `${progressPercentage}%`;
+                
+                // Générer les options
+                optionsContainer.innerHTML = '';
+                question.options.forEach((option, index) => {
+                    const optionElement = document.createElement('div');
+                    optionElement.classList.add('option');
+                    optionElement.textContent = option;
+                    optionElement.setAttribute('role', 'button');
+                    optionElement.setAttribute('tabindex', '0');
+                    
+                    // Ajouter la classe 'selected' si cette option est sélectionnée
+                    if (state.answers[state.currentQuestionIndex] === index) {
+                        optionElement.classList.add('selected');
+                    }
+                    
+                    // Ajouter les écouteurs d'événements
+                    optionElement.addEventListener('click', () => handleOptionClick(index));
+                    optionElement.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            handleOptionClick(index);
+                        }
+                    });
+                    
+                    optionsContainer.appendChild(optionElement);
+                });
+                
+                // Gérer la visibilité des boutons de navigation
+                prevBtn.classList.toggle('hidden', state.currentQuestionIndex === 0);
+            };
+            
+            const showSummaryScreen = () => {
+                quizScreen.classList.add('hidden');
+                summaryScreen.classList.remove('hidden');
+                
+                // Générer le résumé des réponses
+                answersSummary.innerHTML = '';
+                quizQuestions.forEach((question, index) => {
+                    const answerElement = document.createElement('div');
+                    answerElement.classList.add('answer-item');
+                    
+                    const questionElement = document.createElement('p');
+                    questionElement.classList.add('question-text');
+                    questionElement.textContent = `${index + 1}. ${question.question}`;
+                    
+                    const answerTextElement = document.createElement('p');
+                    answerTextElement.classList.add('answer-text');
+                    
+                    const answerIndex = state.answers[index];
+                    answerTextElement.textContent = answerIndex !== -1 
+                        ? `Votre réponse: ${question.options[answerIndex]}`
+                        : 'Non répondu';
+                    
+                    answerElement.appendChild(questionElement);
+                    answerElement.appendChild(answerTextElement);
+                    answersSummary.appendChild(answerElement);
+                });
+            };
+            
+            const showResultScreen = () => {
+                summaryScreen.classList.add('hidden');
+                resultScreen.classList.remove('hidden');
+                
+                // Afficher les résultats
+                resultName.textContent = state.name;
+                scoreSpan.textContent = state.score;
+                maxScoreSpan.textContent = quizQuestions.length;
+            };
+            
+            // Initialiser l'application
+            initQuiz();
+        });
+    </script>
+</body>
+</html> 
